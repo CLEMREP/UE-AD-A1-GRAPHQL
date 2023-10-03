@@ -7,6 +7,13 @@ def movie_with_id(_,info,_id):
             if movie['id'].lower() == _id.lower():
                 return movie
 
+def actor_with_id(_,info,_id):
+    with open('{}/data/actors.json'.format("."), "r") as file:
+        actors = json.load(file)
+        for actor in actors['actors']:
+            if actor['id'].lower() == _id.lower():
+                return actor
+
 def update_movie_rate(_, info, _id, _rate):
     newmovies = {}
     newmovie = {}
