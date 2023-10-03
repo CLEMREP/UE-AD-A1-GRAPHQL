@@ -1,9 +1,11 @@
 type Query {
     movie_with_id(_id: String!): Movie
+    resolve_get_movie_bytitle(_title: String!): Movie
 }
 
 type Mutation {
     update_movie_rate(_id: String!, _rate: Float!): Movie
+    resolve_delete_movie_byid(_id: String!): Movie
 }
 
 type Movie {
