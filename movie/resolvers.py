@@ -1,5 +1,10 @@
 import json
 
+def resolve_movies(_, info):
+    with open('{}/data/movies.json'.format("."), "r") as file:
+        movies = json.load(file)
+        return movies['movies']
+
 def movie_with_id(_,info,_id):
     with open('{}/data/movies.json'.format("."), "r") as file:
         movies = json.load(file)
@@ -27,14 +32,22 @@ def resolve_actors_in_movie(movie, info):
         actors = [actor for actor in data['actors'] if movie['id'] in actor['films']]
         return actors
 
-def resolve_get_movie_bytitle(_, info, _title):
+def resolve_movie_with_title(_, info, _title):
     with open('{}/data/movies.json'.format("."), "r") as file:
         movies = json.load(file)
         for movie in movies['movies']:
             if movie['title'].lower() == _title.lower():
                 return movie
 
-def resolve_delete_movie_byid(_, info, _id):
+def resolve_add_movie(_, info, _id, _title, _director, _rating):
+    with open('{}/data/movies.json'.format("."), "r") as file:
+        movies = json.load(file)
+        movies['movies'].append({'id': _id, 'title': _title, 'director': _director, 'rating': _rating})
+        with open('{}/data/movies.json'.format("."), "w") as wfile:
+            json.dump(movies, wfile)
+        return {'id': _id, 'title': _title, 'director': _director, 'rating': _rating}
+
+def resolve_delete_movie_with_id(_, info, _id):
     with open('{}/data/movies.json'.format("."), "r") as file:
         movies = json.load(file)
         for movie in movies['movies']:
@@ -42,4 +55,5 @@ def resolve_delete_movie_byid(_, info, _id):
                 movies['movies'].remove(movie)
                 with open('{}/data/movies.json'.format("."), "w") as wfile:
                     json.dump(movies, wfile)
-                return movie
+                return "Movie deleted"
+        return "Movie not found"
