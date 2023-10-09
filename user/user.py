@@ -33,13 +33,29 @@ def get_user_movies(userid):
     res = requests.get("http://localhost:3201/bookings/{}".format(userid)).json()
     movies = []
     rvalue = []
+    if 'dates' not in res:
+        return make_response(jsonify({"error":"No books found for this UserID"}),400)
+
     for movie in res['dates'][0]['movies']:
-        movies.append(requests.get("http://localhost:3200/movies/{}".format(movie)).json())
+        print(movie)
+        query = """
+        query {
+            movie_with_id(_id: """ + '''"''' + str(movie) + '''"''' + """) {id title}
+        }
+        """
+        print(requests.post("http://localhost:3001/graphql", json={'query': query}).json())
+        movies.append(requests.post("http://localhost:3001/graphql", json={'query': query}).json()['data']['movie_with_id'])
+        print(movies)
 
     for movie in movies:
-        rvalue.append(requests.get("http://localhost:3200/movies/{}".format(movie['id'])).json())
+        query = """
+        query {
+            movie_with_id(_id: """ + '''"''' + str(movie['id']) + '''"''' + """) {id title}
+        }
+        """
+        rvalue.append(requests.post("http://localhost:3001/graphql", json={'query': query}).json())
 
-    return make_response(jsonify(rvalue),200)
+    return make_response(jsonify(rvalue), 200)
 
 if __name__ == "__main__":
    print("Server running in port %s"%(PORT))
